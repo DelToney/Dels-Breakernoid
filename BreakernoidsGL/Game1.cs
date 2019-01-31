@@ -17,11 +17,14 @@ namespace BreakernoidsGL
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Texture2D bgTexture;
         
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            graphics.PreferredBackBufferHeight = 768;
+            graphics.PreferredBackBufferWidth = 1024;
         }
 
         /// <summary>
@@ -47,6 +50,7 @@ namespace BreakernoidsGL
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            bgTexture = Content.Load<Texture2D>("bg");
            
         }
 
@@ -80,11 +84,17 @@ namespace BreakernoidsGL
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            GraphicsDevice.Clear(Color.DarkGreen);
+
+            spriteBatch.Begin();
+
+            spriteBatch.Draw(bgTexture, new Vector2(0, 0), Color.Green);
+            spriteBatch.End();
 
 
             // TODO: Add your drawing code here
-
+            
             base.Draw(gameTime);
         }
         
