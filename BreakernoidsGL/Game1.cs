@@ -18,6 +18,7 @@ namespace BreakernoidsGL
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Texture2D bgTexture;
+        Paddle paddle;
         
         public Game1()
         {
@@ -51,6 +52,9 @@ namespace BreakernoidsGL
 
             // TODO: use this.Content to load your game content here
             bgTexture = Content.Load<Texture2D>("bg");
+            paddle = new Paddle(this);
+            paddle.LoadContent();
+            paddle.position = new Vector2(512, 740);
            
         }
 
@@ -74,7 +78,9 @@ namespace BreakernoidsGL
                 Exit();
 
             // TODO: Add your update logic here
-            
+            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            paddle.Update(deltaTime);
             base.Update(gameTime);
         }
 
@@ -90,6 +96,7 @@ namespace BreakernoidsGL
             spriteBatch.Begin();
 
             spriteBatch.Draw(bgTexture, new Vector2(0, 0), Color.Green);
+            paddle.Draw(spriteBatch);
             spriteBatch.End();
 
 

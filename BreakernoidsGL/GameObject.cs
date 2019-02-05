@@ -19,16 +19,33 @@ public class GameObject
     protected Game game;
     public Vector2 position = Vector2.Zero;
 
-    public GameObject(GameObject myGame)
+    public GameObject(Game myGame)
     {
-        //
-        // TODO: Add constructor logic here
-        //
         game = myGame;
     }
 
     public virtual void LoadContent() {
+        if (textureName != "")
+        {
+            texture = game.Content.Load<Texture2D>(textureName);
+        }
+    }
 
+    public virtual void Update(float deltaTime)
+    {
+
+    }
+
+
+    public virtual void Draw(SpriteBatch batch)
+    {
+        if (texture != null)
+        {
+            Vector2 drawPosition = position;
+            drawPosition.X -= texture.Width / 2;
+            drawPosition.Y -= texture.Height / 2;
+            batch.Draw(texture, drawPosition, Color.White);
+        }
     }
 
 
