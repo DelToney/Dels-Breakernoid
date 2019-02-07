@@ -18,10 +18,22 @@ namespace BreakernoidsGL
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Texture2D bgTexture;
+
+
         Paddle paddle;
         Ball ball;
         List<Block> blocks = new List<Block>();
+        int[,] blockLayout = new int[,]{
+            {5,5,5,5,5,5,5,5,5,5,5,5,5,5,5},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+            {2,2,2,2,2,2,2,2,2,2,2,2,2,2,2},
+            {3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},
+            {4,4,4,4,4,4,4,4,4,4,4,4,4,4,4},
+        };
         Block blockToDestroy;
+
+
         int colTimer = 20;
         
         public Game1()
@@ -194,12 +206,14 @@ namespace BreakernoidsGL
             paddle.position = new Vector2(512, 740);
             ball.position = new Vector2(512, 740);
 
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i != blockLayout.GetLength(0); i++) 
             {
-                Block tempBlock = new Block(Block.BlockColor.Blue, this);
-                tempBlock.LoadContent();
-                tempBlock.position = new Vector2(64 + i * 64, 200);
-                blocks.Add(tempBlock);
+                for (int j = 0; j != blockLayout.GetLength(1); j++) {
+                    Block tempBlock = new Block((Block.BlockColor)blockLayout[i, j], this);
+                    tempBlock.LoadContent();
+                    tempBlock.position = new Vector2(64 + j * 64, 100 + i * 32);
+                    blocks.Add(tempBlock);
+                }
             }
 
         }
