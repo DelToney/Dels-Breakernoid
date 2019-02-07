@@ -196,7 +196,7 @@ namespace BreakernoidsGL
 
             for (int i = 0; i < 15; i++)
             {
-                Block tempBlock = new Block(this);
+                Block tempBlock = new Block(Block.BlockColor.Blue, this);
                 tempBlock.LoadContent();
                 tempBlock.position = new Vector2(64 + i * 64, 200);
                 blocks.Add(tempBlock);
