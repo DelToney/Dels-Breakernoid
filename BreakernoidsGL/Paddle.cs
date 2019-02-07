@@ -31,6 +31,11 @@ public class Paddle : GameObject
         {
             position.X += speed * deltaTime;
         }
+
+        position.X = MathHelper.Clamp(position.X,
+                                      32 + texture.Width / 2,
+                                      992 - texture.Width / 2);
+
         base.Update(deltaTime);
     }
 }

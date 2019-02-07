@@ -18,6 +18,14 @@ public class GameObject
     protected Texture2D texture;
     protected Game game;
     public Vector2 position = Vector2.Zero;
+    public float Width
+    {
+        get { return texture.Width; }
+    }
+    public float Height
+    {
+        get { return texture.Height; }
+    }
 
     public GameObject(Game myGame)
     {
@@ -48,6 +56,5 @@ public class GameObject
         }
     }
 
-
-
+    
 }
