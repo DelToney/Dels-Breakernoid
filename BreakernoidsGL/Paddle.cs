@@ -14,10 +14,24 @@ using Microsoft.Xna.Framework.Input;
 public class Paddle : GameObject
 {
     private float speed = 1000;
+    public bool longPaddle = false;
     public Paddle(Game myGame):    
         base(myGame)
     {
             textureName = "Paddle";
+    }
+
+    public void SwitchPaddle()
+    {
+        if (longPaddle)
+        {
+            this.textureName = "paddle_long";
+            this.LoadContent();
+        } else
+        {
+            this.textureName = "paddle";
+            this.LoadContent();
+        }
     }
 
     public override void Update(float deltaTime)

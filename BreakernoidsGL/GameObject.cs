@@ -26,6 +26,7 @@ public class GameObject
     {
         get { return texture.Height; }
     }
+    public Rectangle BoundingRect;
 
     public GameObject(Game myGame)
     {
@@ -52,6 +53,7 @@ public class GameObject
             Vector2 drawPosition = position;
             drawPosition.X -= texture.Width / 2;
             drawPosition.Y -= texture.Height / 2;
+            BoundingRect = new Rectangle((int)drawPosition.X, (int)drawPosition.Y, texture.Width, texture.Height);
             batch.Draw(texture, drawPosition, Color.White);
         }
     }

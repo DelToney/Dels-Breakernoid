@@ -15,6 +15,10 @@ public class Ball : GameObject
 
     public Vector2 direction = new Vector2(.707f, -.707f);
     private float speed = 350;
+    public bool caught = false;
+    public bool destroy = false;
+    public int colTimer = 0;
+    public Vector2 tempBallPaddleRatio;
 
     public Ball(Game myGame):
         base(myGame)
@@ -24,8 +28,11 @@ public class Ball : GameObject
 
     public override void Update(float deltaTime)
     {
+        if (!caught)
+        {
+            position += direction * speed * deltaTime;
+        }
 
-        position += direction * speed * deltaTime;
         base.Update(deltaTime);
     }
 }
