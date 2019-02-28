@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using System.Xml.Serialization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -41,30 +43,33 @@ namespace BreakernoidsGL
 
 
         List<Block> blocks = new List<Block>();
-        int[,] blockLayout = new int[,]{
-            {5,5,5,5,5,5,5,5,5,5,5,5,5,5,5},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-            {2,2,2,2,2,2,2,2,2,2,2,2,2,2,2},
-            {3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},
-            {4,4,4,4,4,4,4,4,4,4,4,4,4,4,4},
-        };
-        Block blockToDestroy;
 
-
-        int colTimer = 20;
+        Level level = new Level();
         
 
+        
 
+        Block blockToDestroy;
 
-
-
+        
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             graphics.PreferredBackBufferHeight = 768;
             graphics.PreferredBackBufferWidth = 1024;
+        }
+
+
+        protected void LoadLevel(string levelName)
+        {
+            using (FileStream fs = File.OpenRead("Levels/" + levelName))
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(Level));
+                level = (Level)serializer.Deserialize(fs);
+            }
+
+            // TODO: Generate blocks based on level.layout array
         }
 
 
@@ -104,13 +109,13 @@ namespace BreakernoidsGL
 
             switch (powerup.powerUpType)
             {
-                case (PowerUp.PowerUpType)0:
+                case PowerUp.PowerUpType.powerup_c:
                     ballCatch = true;
                     break;
-                case (PowerUp.PowerUpType)1:
+                case PowerUp.PowerUpType.powerup_b:
                     SpawnBall();
                     break;
-                case (PowerUp.PowerUpType)2:
+                case PowerUp.PowerUpType.powerup_p:
                     paddle.longPaddle = true;
                     paddle.SwitchPaddle();
                     break;
@@ -118,6 +123,10 @@ namespace BreakernoidsGL
 
         }
 
+
+
+
+        
         private void SpawnBall()
         {
             Ball newBall = new Ball(this);
@@ -126,6 +135,9 @@ namespace BreakernoidsGL
             newBall.LoadContent();
             newBall.position = new Vector2(paddle.position.X, paddle.position.Y - paddle.Height - newBall.Height);
         }
+
+
+
 
 
         private void DestroyBalls()
@@ -161,7 +173,8 @@ namespace BreakernoidsGL
                 if ((ball.position.X > (paddle.position.X - paddle.Width / 6)) &&
                      (ball.position.X < (paddle.position.X + paddle.Width / 6)) &&
                      (ball.position.Y < paddle.position.Y) &&
-                     (ball.position.Y > (paddle.position.Y - radius - paddle.Height / 2)))
+                     (ball.position.Y > (paddle.position.Y - radius - paddle.Height / 2)) &&
+                     !ball.caught)
                 {
                     ball.direction = Vector2.Reflect(ball.direction, new Vector2(0, -1));
                     ball.colTimer = 60;
@@ -172,10 +185,11 @@ namespace BreakernoidsGL
                 if ((ball.position.X > (paddle.position.X + paddle.Width / 6)) &&
                      (ball.position.X < (paddle.position.X + radius + paddle.Width / 2)) &&
                      (ball.position.Y < paddle.position.Y) &&
-                     (ball.position.Y > (paddle.position.Y - radius - paddle.Height / 2)))
+                     (ball.position.Y > (paddle.position.Y - radius + 4 - paddle.Height / 2)) &&
+                     !ball.caught)
                 {
                     ball.direction = Vector2.Reflect(ball.direction, new Vector2(0.196f, -0.981f));
-                    colTimer = 60;
+                    ball.colTimer = 60;
                     ballBounceSFX.Play();
 
                 }
@@ -183,7 +197,8 @@ namespace BreakernoidsGL
                 if ((ball.position.X > (paddle.position.X - radius - paddle.Width / 2)) &&
                      (ball.position.X < (paddle.position.X - paddle.Width / 6)) &&
                      (ball.position.Y < paddle.position.Y) &&
-                     (ball.position.Y > (paddle.position.Y - radius - paddle.Height / 2)))
+                     (ball.position.Y > (paddle.position.Y - radius + 4 - paddle.Height / 2)) &&
+                     !ball.caught)
                 {
                     ball.direction = Vector2.Reflect(ball.direction, new Vector2(-0.196f, -0.981f));
                     ball.colTimer = 60;
@@ -209,8 +224,8 @@ namespace BreakernoidsGL
                     //left
                     if ((ball.position.X > b.position.X - radius - b.Width / 2) &&
                          (ball.position.X < b.position.X - b.Width / 2) &&
-                         (ball.position.Y < b.position.Y + b.Height / 2 - 4) &&
-                         (ball.position.Y > b.position.Y - b.Height / 2 + 4))
+                         (ball.position.Y < b.position.Y + b.Height / 2) &&
+                         (ball.position.Y > b.position.Y - b.Height / 2))
                     {
                         ball.direction = Vector2.Reflect(ball.direction, new Vector2(-1, 0));
                         blockToDestroy = b;
@@ -222,8 +237,8 @@ namespace BreakernoidsGL
                     //right
                     if ((ball.position.X > b.position.X + b.Width / 2) &&
                          (ball.position.X < b.position.X + radius + b.Width / 2) &&
-                         (ball.position.Y < b.position.Y + b.Height / 2 - 4) &&
-                         (ball.position.Y > b.position.Y - b.Height / 2 + 4))
+                         (ball.position.Y < b.position.Y + b.Height / 2) &&
+                         (ball.position.Y > b.position.Y - b.Height / 2))
                     {
                         ball.direction = Vector2.Reflect(ball.direction, new Vector2(1, 0));
                         blockToDestroy = b;
@@ -362,12 +377,17 @@ namespace BreakernoidsGL
             ballHitSFX = Content.Load<SoundEffect>("ball_hit");
             powerUpSFX = Content.Load<SoundEffect>("powerup");
             deathSFX = Content.Load<SoundEffect>("death");
+            LoadLevel("Level5.xml");
 
             //blocks
-            for (int i = 0; i != blockLayout.GetLength(0); i++) 
+            for (int i = 0; i != level.layout.GetLength(0); i++) 
             {
-                for (int j = 0; j != blockLayout.GetLength(1); j++) {
-                    Block tempBlock = new Block((Block.BlockColor)blockLayout[i, j], this);
+                for (int j = 0; j <= level.layout[i].GetLength(0) - 1; j++) {
+                    if (level.layout[i][j] == 9)
+                    {
+                        continue;
+                    }
+                    Block tempBlock = new Block((Block.BlockColor)level.layout[i][j], this);
                     tempBlock.LoadContent();
                     tempBlock.position = new Vector2(64 + j * 64, 100 + i * 32);
                     blocks.Add(tempBlock);
