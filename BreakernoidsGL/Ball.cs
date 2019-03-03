@@ -14,7 +14,7 @@ public class Ball : GameObject
 {
 
     public Vector2 direction = new Vector2(.707f, -.707f);
-    private float speed = 350;
+    public float speed = 300;
     public bool caught = false;
     public bool destroy = false;
     public int colTimer = 0;

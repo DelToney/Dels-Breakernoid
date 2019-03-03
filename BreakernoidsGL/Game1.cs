@@ -22,7 +22,7 @@ namespace BreakernoidsGL
         SpriteBatch spriteBatch;
         Texture2D bgTexture;
 
-
+        int score = 0;
         int lives = 0;
 
 
@@ -32,6 +32,7 @@ namespace BreakernoidsGL
 
 
         bool ballCatch = false;
+        int ballSpeedMult = 0;
         
 
 
@@ -45,10 +46,6 @@ namespace BreakernoidsGL
         List<Block> blocks = new List<Block>();
 
         Level level = new Level();
-        
-
-        
-
         Block blockToDestroy;
 
         
@@ -69,10 +66,60 @@ namespace BreakernoidsGL
                 level = (Level)serializer.Deserialize(fs);
             }
 
-            // TODO: Generate blocks based on level.layout array
+            for (int i = 0; i != level.layout.GetLength(0); i++)
+            {
+                for (int j = 0; j <= level.layout[i].GetLength(0) - 1; j++)
+                {
+                    if (level.layout[i][j] == 9)
+                    {
+                        continue;
+                    }
+                    Block tempBlock = new Block((Block.BlockColor)level.layout[i][j], this);
+                    tempBlock.LoadContent();
+                    tempBlock.position = new Vector2(64 + j * 64, 100 + i * 32);
+                    blocks.Add(tempBlock);
+                }
+            }
+
+            level.ballSpeed += 100 * ballSpeedMult;
+
         }
 
 
+
+        protected void AddScore(int scoreToAdd)
+        {
+            score += scoreToAdd;
+        }
+
+        private void NextLevel()
+        {
+            //deactivate power ups
+            ballCatch = false;
+            paddle.longPaddle = false;
+            paddle.SwitchPaddle();
+
+            //resetting paddle pos
+            paddle.position = new Vector2(512, 740);
+
+            //Reset balls
+            for(int i = balls.Count - 1; i >= 0; i--)
+            {       
+                Ball tempBall = balls[i];
+                balls.Remove(tempBall);
+            }
+
+            for (int i = powerups.Count - 1; i >= 0; i--)
+            {
+                PowerUp tempPower = powerups[i];
+                powerups.Remove(tempPower); 
+            }
+
+            SpawnBall();
+
+
+            LoadLevel(level.nextLevel);
+        }
 
 
 
@@ -94,7 +141,6 @@ namespace BreakernoidsGL
             }
 
         }
-
         private void ActivatePowerUp(PowerUp powerup)
         {
             for (int i = powerups.Count - 1; i >= 0; i--)
@@ -102,6 +148,7 @@ namespace BreakernoidsGL
                 if (powerups[i] == powerup) 
                 {
                     powerups[i].readyToDestroy = true;
+                    AddScore(500 + 500 * ballSpeedMult);
                     destroyPowerUp = true;
                 }
             }
@@ -134,6 +181,7 @@ namespace BreakernoidsGL
 
             newBall.LoadContent();
             newBall.position = new Vector2(paddle.position.X, paddle.position.Y - paddle.Height - newBall.Height);
+            newBall.speed = level.ballSpeed;
         }
 
 
@@ -284,6 +332,7 @@ namespace BreakernoidsGL
                         SpawnPowerUp(blockToDestroy.position);
                     }
                     blocks.Remove(blockToDestroy);
+                    AddScore(100 + 100 * ballSpeedMult);
                     destroyBlock = false;
                 }
 
@@ -358,6 +407,10 @@ namespace BreakernoidsGL
         /// </summary>
         protected override void LoadContent()
         {
+            LoadLevel("Level1.xml");
+
+
+
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
@@ -377,22 +430,7 @@ namespace BreakernoidsGL
             ballHitSFX = Content.Load<SoundEffect>("ball_hit");
             powerUpSFX = Content.Load<SoundEffect>("powerup");
             deathSFX = Content.Load<SoundEffect>("death");
-            LoadLevel("Level5.xml");
 
-            //blocks
-            for (int i = 0; i != level.layout.GetLength(0); i++) 
-            {
-                for (int j = 0; j <= level.layout[i].GetLength(0) - 1; j++) {
-                    if (level.layout[i][j] == 9)
-                    {
-                        continue;
-                    }
-                    Block tempBlock = new Block((Block.BlockColor)level.layout[i][j], this);
-                    tempBlock.LoadContent();
-                    tempBlock.position = new Vector2(64 + j * 64, 100 + i * 32);
-                    blocks.Add(tempBlock);
-                }
-            }
 
         }
 
@@ -465,8 +503,15 @@ namespace BreakernoidsGL
             {
                 LoseLife();
             }
+
+
+            if (blocks.Count == 0)
+            {
+                NextLevel();
+            }
             base.Update(gameTime);
         }
+
 
 
         /// <summary>
