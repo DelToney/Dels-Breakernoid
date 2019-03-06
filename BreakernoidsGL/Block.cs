@@ -26,36 +26,35 @@ public class Block : GameObject
     public Block(BlockColor color, Game myGame):
         base(myGame)
     {
-        if (color == BlockColor.Red)
-        {
-            textureName = "block_red";
-        }
-        if (color == BlockColor.Yellow)
-        {
-            textureName = "block_yellow";
-        }
-        if (color == BlockColor.Blue)
-        {
-            textureName = "block_blue";
-        }
-        if (color == BlockColor.Green)
-        {
-            textureName = "block_green";
-        }
-        if (color == BlockColor.Purple)
-        {
-            textureName = "block_purple";
-        }
-        if (color == BlockColor.GreyHi)
-        {
-            textureName = "block_grey_hi";
-        }
-        if (color == BlockColor.Grey)
-        {
-            textureName = "block_grey";
-        }
 
-    }
+        switch (color)
+        {
+            case BlockColor.Red:
+                textureName = "block_red";
+                break;
+            case BlockColor.Yellow:
+                textureName = "block_yellow";
+                break;
+            case BlockColor.Blue:
+                textureName = "block_blue";
+                break;
+            case BlockColor.Green:
+                textureName = "block_green";
+                break;
+            case BlockColor.Purple:
+                textureName = "block_purple";
+                break;
+            case BlockColor.GreyHi:
+                textureName = "block_grey_hi";
+                break;
+            case BlockColor.Grey:
+                textureName = "block_grey";
+                break;
+            case (BlockColor)9:
+                textureName = "";
+                break;
+        }
+            }
 
     public override void Update(float deltaTime)
     {

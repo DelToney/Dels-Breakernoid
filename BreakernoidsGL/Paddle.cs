@@ -52,4 +52,7 @@ public class Paddle : GameObject
 
         base.Update(deltaTime);
     }
+
+    
+
 }
