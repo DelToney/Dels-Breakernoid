@@ -23,7 +23,18 @@ namespace BreakernoidsGL
         Texture2D bgTexture;
 
         int score = 0;
-        int lives = 0;
+        int levelNumber = 1;
+
+
+        int lives = 5;
+        bool dead = false;
+
+        SpriteFont font;
+        
+
+
+        bool onBreak = false;
+        float breakTime = 2.0f;
 
 
         Random random = new Random();
@@ -115,10 +126,11 @@ namespace BreakernoidsGL
                 powerups.Remove(tempPower); 
             }
 
-            SpawnBall();
-
+            AddScore(5000 + 5000 * ballSpeedMult + 500 * (balls.Count - 1) * ballSpeedMult);
 
             LoadLevel(level.nextLevel);
+            levelNumber += 1;
+            StartLevelBreak();
         }
 
 
@@ -138,6 +150,7 @@ namespace BreakernoidsGL
             if (paddle.BoundingRect.Intersects(powerup.BoundingRect))
             {
                 ActivatePowerUp(powerup);
+                AddScore(500 + 500 * ballSpeedMult);
             }
 
         }
@@ -148,7 +161,6 @@ namespace BreakernoidsGL
                 if (powerups[i] == powerup) 
                 {
                     powerups[i].readyToDestroy = true;
-                    AddScore(500 + 500 * ballSpeedMult);
                     destroyPowerUp = true;
                 }
             }
@@ -185,6 +197,14 @@ namespace BreakernoidsGL
         }
 
 
+        private void StartLevelBreak()
+        {
+            SpawnBall();
+            breakTime = 2.0f;
+            onBreak = true;
+            
+        }
+
 
 
 
@@ -208,6 +228,17 @@ namespace BreakernoidsGL
             paddle.longPaddle = false;
             paddle.SwitchPaddle();
             deathSFX.Play();
+            if (lives == 0)
+            {
+                Lose();
+            }
+            lives -= 1;
+        }
+
+        private void Lose()
+        {
+            dead = true;
+            onBreak = true;
         }
 
         protected void CheckCollisions(Ball ball)
@@ -407,7 +438,7 @@ namespace BreakernoidsGL
         /// </summary>
         protected override void LoadContent()
         {
-            LoadLevel("Level1.xml");
+            LoadLevel("LevelTest.xml");
 
 
 
@@ -422,8 +453,11 @@ namespace BreakernoidsGL
             paddle.LoadContent();
             paddle.position = new Vector2(512, 740);
 
+            //load score font
+            font = Content.Load<SpriteFont>("main_font");
+
             //load ball
-            SpawnBall();
+            StartLevelBreak();
 
             //sfx
             ballBounceSFX = Content.Load<SoundEffect>("ball_bounce");
@@ -453,9 +487,13 @@ namespace BreakernoidsGL
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
             // TODO: Add your update logic here
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if  (!onBreak &&  !dead)
+            {
+
+
 
             paddle.Update(deltaTime);
             foreach (Ball ball in balls)
@@ -509,6 +547,19 @@ namespace BreakernoidsGL
             {
                 NextLevel();
             }
+
+            } else if (onBreak == true && dead == false) {
+
+                breakTime -= deltaTime;
+                if (breakTime < 0)
+                {
+                    onBreak = false;
+                }
+            } else if (onBreak && dead)
+            {
+
+            }
+            
             base.Update(gameTime);
         }
 
@@ -525,22 +576,55 @@ namespace BreakernoidsGL
 
             spriteBatch.Begin();
 
+            string livesCount = String.Format("Lives: {0}", lives);
+            Vector2 strSize = font.MeasureString(livesCount);
+            Vector2 strLoc = new Vector2(1024 - 40 - strSize.X,50);
+            spriteBatch.DrawString(font, livesCount, strLoc, Color.White);
+
+            if (onBreak && !dead)
+            {
+                string levelText = String.Format("Level {0}", levelNumber);
+                strSize = font.MeasureString(levelText);
+                strLoc = new Vector2(1024 / 2, 768 / 2);
+                strLoc.X -= strSize.X / 2;
+                strLoc.Y -= strSize.Y / 2;
+                spriteBatch.DrawString(font, levelText, strLoc, Color.White);
+            }
+
+            if (dead)
+            {
+                string gameOver = String.Format("Game Over");
+                strSize = font.MeasureString(gameOver);
+                strLoc = new Vector2(1024 / 2, 768 / 2);
+                strLoc.X -= strSize.X / 2;
+                strLoc.Y -= strSize.Y / 2;
+                spriteBatch.DrawString(font, gameOver, strLoc, Color.White);
+            }
+
             spriteBatch.Draw(bgTexture, new Vector2(0, 0), Color.Green);
             paddle.Draw(spriteBatch);
             foreach (Ball ball in balls)
             {
                 ball.Draw(spriteBatch);
             }
+
+
             //draw all powerups
             foreach (PowerUp powerup in powerups)
             {
                 powerup.Draw(spriteBatch);
             }
+
+
             //draw all blocks
             foreach (Block b in blocks)
             {
                 b.Draw(spriteBatch);
             }
+
+            spriteBatch.DrawString(font, String.Format("Score: {0:#,###0}", score),
+                       new Vector2(40, 50), Color.White);
+
             spriteBatch.End();
 
 
