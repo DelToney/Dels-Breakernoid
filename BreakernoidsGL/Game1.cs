@@ -262,6 +262,22 @@ namespace BreakernoidsGL
                     ball.colTimer = 20;
                     ballBounceSFX.Play();
 
+                    float dotResult = Vector2.Dot(ball.direction, -Vector2.UnitY);
+                    if (dotResult > 0.9f)
+                    {
+                        // We need to figure out if we're clockwise or counter-clockwise
+                        Vector3 crossResult = Vector3.Cross(new Vector3(ball.direction, 0),
+                                                            -Vector3.UnitY);
+                        if (crossResult.Z < 0)
+                        {
+                            ball.direction = new Vector2(0.423f, -0.906f);
+                        }
+                        else
+                        {
+                            ball.direction = new Vector2(-0.423f, -0.906f);
+                        }
+                    }
+
                 }
                 //right colision
                 if ((ball.position.X > (paddle.position.X + paddle.Width / 6)) &&
@@ -281,6 +297,22 @@ namespace BreakernoidsGL
                         ball.direction = new Vector2(0.906f, -0.423f);
                     }
 
+                    dotResult = Vector2.Dot(ball.direction, -Vector2.UnitY);
+                    if (dotResult > 0.9f)
+                    {
+                        // We need to figure out if we're clockwise or counter-clockwise
+                        Vector3 crossResult = Vector3.Cross(new Vector3(ball.direction, 0),
+                                                            -Vector3.UnitY);
+                        if (crossResult.Z < 0)
+                        {
+                            ball.direction = new Vector2(0.423f, -0.906f);
+                        }
+                        else
+                        {
+                            ball.direction = new Vector2(-0.423f, -0.906f);
+                        }
+                    }
+
                 }
                 //left collision
                 if ((ball.position.X > (paddle.position.X - radius - paddle.Width / 2)) &&
@@ -298,6 +330,22 @@ namespace BreakernoidsGL
                     if (dotResult > 0.9f)
                     {
                         ball.direction = new Vector2(-0.906f, -0.423f);
+                    }
+
+                    dotResult = Vector2.Dot(ball.direction, -Vector2.UnitY);
+                    if (dotResult > 0.9f)
+                    {
+                        // We need to figure out if we're clockwise or counter-clockwise
+                        Vector3 crossResult = Vector3.Cross(new Vector3(ball.direction, 0),
+                                                            -Vector3.UnitY);
+                        if (crossResult.Z < 0)
+                        {
+                            ball.direction = new Vector2(0.423f, -0.906f);
+                        }
+                        else
+                        {
+                            ball.direction = new Vector2(-0.423f, -0.906f);
+                        }
                     }
                 }
 
