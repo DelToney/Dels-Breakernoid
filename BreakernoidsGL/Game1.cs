@@ -30,7 +30,7 @@ namespace BreakernoidsGL
         bool dead = false;
 
         SpriteFont font;
-        
+
 
 
         bool onBreak = false;
@@ -44,14 +44,14 @@ namespace BreakernoidsGL
 
         bool ballCatch = false;
         int ballSpeedMult = 0;
-        
+
 
 
         Paddle paddle;
         List<Ball> balls = new List<Ball>();
         SoundEffect ballBounceSFX, ballHitSFX, deathSFX, powerUpSFX;
         List<PowerUp> powerups = new List<PowerUp>();
-        
+
 
 
         List<Block> blocks = new List<Block>();
@@ -59,7 +59,7 @@ namespace BreakernoidsGL
         Level level = new Level();
         Block blockToDestroy;
 
-        
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -114,8 +114,8 @@ namespace BreakernoidsGL
             paddle.position = new Vector2(512, 740);
 
             //Reset balls
-            for(int i = balls.Count - 1; i >= 0; i--)
-            {       
+            for (int i = balls.Count - 1; i >= 0; i--)
+            {
                 Ball tempBall = balls[i];
                 balls.Remove(tempBall);
             }
@@ -123,7 +123,7 @@ namespace BreakernoidsGL
             for (int i = powerups.Count - 1; i >= 0; i--)
             {
                 PowerUp tempPower = powerups[i];
-                powerups.Remove(tempPower); 
+                powerups.Remove(tempPower);
             }
 
             AddScore(5000 + 5000 * ballSpeedMult + 500 * (balls.Count - 1) * ballSpeedMult);
@@ -135,8 +135,8 @@ namespace BreakernoidsGL
 
 
 
-        protected void SpawnPowerUp (Vector2 postion)
-        {            
+        protected void SpawnPowerUp(Vector2 postion)
+        {
             int type = random.Next(3);
             PowerUp temppower = new PowerUp((PowerUp.PowerUpType)type, this);
             temppower.position = blockToDestroy.position;
@@ -145,7 +145,7 @@ namespace BreakernoidsGL
         }
 
         //check for power ups
-        private void CheckForPowerUps (PowerUp powerup)
+        private void CheckForPowerUps(PowerUp powerup)
         {
             if (paddle.BoundingRect.Intersects(powerup.BoundingRect))
             {
@@ -158,7 +158,7 @@ namespace BreakernoidsGL
         {
             for (int i = powerups.Count - 1; i >= 0; i--)
             {
-                if (powerups[i] == powerup) 
+                if (powerups[i] == powerup)
                 {
                     powerups[i].readyToDestroy = true;
                     destroyPowerUp = true;
@@ -185,7 +185,7 @@ namespace BreakernoidsGL
 
 
 
-        
+
         private void SpawnBall()
         {
             Ball newBall = new Ball(this);
@@ -202,7 +202,7 @@ namespace BreakernoidsGL
             SpawnBall();
             breakTime = 2.0f;
             onBreak = true;
-            
+
         }
 
 
@@ -255,10 +255,13 @@ namespace BreakernoidsGL
                      (ball.position.Y > (paddle.position.Y - radius - paddle.Height / 2)) &&
                      !ball.caught)
                 {
+
+
+
                     ball.direction = Vector2.Reflect(ball.direction, new Vector2(0, -1));
-                    ball.colTimer = 60;
+                    ball.colTimer = 20;
                     ballBounceSFX.Play();
-                    Console.WriteLine("Center");
+
                 }
                 //right colision
                 if ((ball.position.X > (paddle.position.X + paddle.Width / 6)) &&
@@ -267,9 +270,16 @@ namespace BreakernoidsGL
                      (ball.position.Y > (paddle.position.Y - radius + 4 - paddle.Height / 2)) &&
                      !ball.caught)
                 {
+
+
                     ball.direction = Vector2.Reflect(ball.direction, new Vector2(0.196f, -0.981f));
-                    ball.colTimer = 60;
+                    ball.colTimer = 20;
                     ballBounceSFX.Play();
+                    float dotResult = Vector2.Dot(ball.direction, Vector2.UnitX);
+                    if (dotResult > 0.9f)
+                    {
+                        ball.direction = new Vector2(0.906f, -0.423f);
+                    }
 
                 }
                 //left collision
@@ -279,9 +289,16 @@ namespace BreakernoidsGL
                      (ball.position.Y > (paddle.position.Y - radius + 4 - paddle.Height / 2)) &&
                      !ball.caught)
                 {
+
+
                     ball.direction = Vector2.Reflect(ball.direction, new Vector2(-0.196f, -0.981f));
-                    ball.colTimer = 60;
+                    ball.colTimer = 20;
                     ballBounceSFX.Play();
+                    float dotResult = Vector2.Dot(ball.direction, -Vector2.UnitX);
+                    if (dotResult > 0.9f)
+                    {
+                        ball.direction = new Vector2(-0.906f, -0.423f);
+                    }
                 }
 
                 //if ball catch is on and the ball hit the paddle, mark the ball as caught
@@ -295,9 +312,10 @@ namespace BreakernoidsGL
 
 
                 bool destroyBlock = false;
-                
 
-                foreach (Block b in blocks) {
+
+                foreach (Block b in blocks)
+                {
                     //block collision
 
                     //left
@@ -357,8 +375,8 @@ namespace BreakernoidsGL
 
                 if (destroyBlock)
                 {
-                    
-                    if (random.NextDouble()%1 < spawnChance)
+
+                    if (random.NextDouble() % 1 < spawnChance)
                     {
                         SpawnPowerUp(blockToDestroy.position);
                     }
@@ -368,7 +386,7 @@ namespace BreakernoidsGL
                 }
 
             }
-            
+
             //kill powerups off screen
             for (int i = powerups.Count - 1; i >= 0; i--)
             {
@@ -411,7 +429,7 @@ namespace BreakernoidsGL
             {
                 ball.destroy = true;
             }
-            
+
 
         }
 
@@ -478,6 +496,9 @@ namespace BreakernoidsGL
 
         }
 
+
+
+
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -490,76 +511,87 @@ namespace BreakernoidsGL
             // TODO: Add your update logic here
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if  (!onBreak &&  !dead)
+            if (!onBreak && !dead)
             {
 
 
 
-            paddle.Update(deltaTime);
-            foreach (Ball ball in balls)
-            {
-                ball.Update(deltaTime);
-                if (ball.colTimer != 0)
+                paddle.Update(deltaTime);
+
+                //updating balls 
+                foreach (Ball ball in balls)
                 {
-                    ball.colTimer -= 1;
+                    ball.Update(deltaTime);
+                    if (ball.colTimer != 0)
+                    {
+                        ball.colTimer -= 1;
+                    }
+
+
                 }
-            }
 
-            DestroyBalls();
-            
-            
-            
-            foreach (PowerUp powerup in powerups)
-            {
-                CheckForPowerUps(powerup);
-                powerup.Update(deltaTime);
-            }
 
-            foreach (Ball ball in balls)
-            {
-                CheckCollisions(ball);
-            
-                if (ball.caught)
+
+
+                DestroyBalls();
+
+
+
+                foreach (PowerUp powerup in powerups)
                 {
-                    ball.position = paddle.position + ball.tempBallPaddleRatio;
-                    KeyboardState keyState = Keyboard.GetState();
-                    if (keyState.IsKeyDown(Keys.Space)) {
-                        ball.caught = false;
-                        if (ball.position.X > paddle.position.X)
+                    CheckForPowerUps(powerup);
+                    powerup.Update(deltaTime);
+                }
+
+                foreach (Ball ball in balls)
+                {
+                    CheckCollisions(ball);
+
+                    if (ball.caught)
+                    {
+                        ball.position = paddle.position + ball.tempBallPaddleRatio;
+                        KeyboardState keyState = Keyboard.GetState();
+                        if (keyState.IsKeyDown(Keys.Space))
                         {
-                            ball.direction = new Vector2(.707f, -.707f);
-                        }
-                        if (ball.position.X < paddle.position.X)
-                        {
-                            ball.direction = new Vector2(-.707f, -.707f);
+                            ball.caught = false;
+                            if (ball.position.X > paddle.position.X)
+                            {
+                                ball.direction = new Vector2(.707f, -.707f);
+                            }
+                            if (ball.position.X < paddle.position.X)
+                            {
+                                ball.direction = new Vector2(-.707f, -.707f);
+                            }
                         }
                     }
                 }
-            }
 
-            if (balls.Count == 0)
+                if (balls.Count == 0)
+                {
+                    LoseLife();
+                }
+
+
+                if (blocks.Count == 0)
+                {
+                    NextLevel();
+                }
+
+            }
+            else if (onBreak == true && dead == false)
             {
-                LoseLife();
-            }
-
-
-            if (blocks.Count == 0)
-            {
-                NextLevel();
-            }
-
-            } else if (onBreak == true && dead == false) {
 
                 breakTime -= deltaTime;
                 if (breakTime < 0)
                 {
                     onBreak = false;
                 }
-            } else if (onBreak && dead)
+            }
+            else if (onBreak && dead)
             {
 
             }
-            
+
             base.Update(gameTime);
         }
 
@@ -578,7 +610,7 @@ namespace BreakernoidsGL
 
             string livesCount = String.Format("Lives: {0}", lives);
             Vector2 strSize = font.MeasureString(livesCount);
-            Vector2 strLoc = new Vector2(1024 - 40 - strSize.X,50);
+            Vector2 strLoc = new Vector2(1024 - 40 - strSize.X, 50);
             spriteBatch.DrawString(font, livesCount, strLoc, Color.White);
 
             if (onBreak && !dead)
@@ -629,9 +661,9 @@ namespace BreakernoidsGL
 
 
             // TODO: Add your drawing code here
-            
+
             base.Draw(gameTime);
         }
-        
+
     }
 }

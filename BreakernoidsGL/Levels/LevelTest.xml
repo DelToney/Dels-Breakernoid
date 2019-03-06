@@ -240,6 +240,6 @@
       <int>1</int>
     </ArrayOfInt>
   </layout>
-  <ballSpeed>900</ballSpeed>
+  <ballSpeed>500</ballSpeed>
   <nextLevel>Level1.xml</nextLevel>
 </Level>
