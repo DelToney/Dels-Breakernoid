@@ -1,5 +1,5 @@
 # Dels Breakernoid
-# Week 1
+## Week 1
 
 Week 1 of this project was fairly basic. A lot of what I known from my
 internship in CO was pretty relevant to this project and helped me understand
@@ -13,7 +13,7 @@ it"
 
 Total Time spent: 4 hours
 
-# Week 2
+## Week 2
 
 Week 2 I had a lot of trouble programming the collision for the paddle and
 getting each side to register as the correct side was a huge pain in the ass.
@@ -25,7 +25,7 @@ The blocks were a slight pain to get set up though.
 
 Total Time: 4.5 hours
 
-# Week 3/4
+## Week 3/4
 
 Week 3 and 4: THE POWER UPS. I HATE THESE THINGS. And the fact that he didn't
 teach us about bounding boxes earlier?! What?!
@@ -40,7 +40,7 @@ And getting Catch to work was a nightmare.
 
 Total Time: 7 Hours
 
-# Week 5/6
+## Week 5/6
 
 Weeks 5 and 6 Levels have not been as much of an issue because I learned XML at
 my internship, so connecting that to C# isn't as hard as I expected. As well,
